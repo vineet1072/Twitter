@@ -13,7 +13,7 @@ export const POSTS = [
         _id: "1",
         text: "Nice Tutorial",
         user: {
-          username: "jane-doe",
+          username: "janedoe",
           profileImg: "/avatars/girl1.png",
           fullName: "Jane Doe",
         },
