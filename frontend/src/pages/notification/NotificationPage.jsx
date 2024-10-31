@@ -21,7 +21,7 @@ const NotificationPage = () => {
       _id: "2",
       from: {
         _id: "2",
-        username: "jane doe",
+        username: "janedoe",
         profileImg: "/avatars/girl1.png",
       },
       type: "like",
