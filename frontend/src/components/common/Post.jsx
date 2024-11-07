@@ -1,3 +1,4 @@
+import LoadingSpinner from "./LoadingSpinner";
 import { FaRegComment } from "react-icons/fa";
 import { BiRepost } from "react-icons/bi";
 import { FaRegHeart } from "react-icons/fa";
@@ -5,19 +6,52 @@ import { FaRegBookmark } from "react-icons/fa6";
 import { FaTrash } from "react-icons/fa";
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import toast from "react-hot-toast";
+
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 const Post = ({ post }) => {
   const [comment, setComment] = useState("");
+
+  const queryClient = useQueryClient();
+
+  const { data: authUser } = useQuery({
+    queryKey: ["authUser"],
+  });
+
+  const { mutate: deletePost, isPending } = useMutation({
+    mutationFn: async () => {
+      const res = await fetch(`/api/posts/${post._id}`, {
+        method: "DELETE",
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error || "Something went wrong");
+      }
+
+      return data;
+    },
+
+    onSuccess: () => {
+      toast.success("Post deleted Sucessfully");
+      queryClient.invalidateQueries({ queryKey: ["posts"] });
+    },
+  });
+
   const postOwner = post.user;
   const isLiked = false;
 
-  const isMyPost = true;
+  const isMyPost = authUser._id === post.user._id;
 
   const formattedDate = "1h";
 
   const isCommenting = false;
 
-  const handleDeletePost = () => {};
+  const handleDeletePost = () => {
+    deletePost();
+  };
 
   const handlePostComment = (e) => {
     e.preventDefault();
@@ -50,10 +84,13 @@ const Post = ({ post }) => {
             </span>
             {isMyPost && (
               <span className="flex justify-end flex-1">
-                <FaTrash
-                  className="cursor-pointer hover:text-red-500"
-                  onClick={handleDeletePost}
-                />
+                {!isPending && (
+                  <FaTrash
+                    className="cursor-pointer hover:text-red-500"
+                    onClick={handleDeletePost}
+                  />
+                )}
+                {isPending && <LoadingSpinner size="sm" />}
               </span>
             )}
           </div>
