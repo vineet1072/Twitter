@@ -48,10 +48,6 @@ const CreatePost = () => {
     },
   });
 
-  const data = {
-    profileImg: "/avatars/boy1.png",
-  };
-
   const handleSubmit = (e) => {
     e.preventDefault();
     createPost({ text, img });
