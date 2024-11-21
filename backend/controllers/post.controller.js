@@ -72,20 +72,37 @@ export const commentOnPost = async (req, res) => {
       return res.status(400).json({ error: "Text field is required" });
     }
 
-    const post = await Post.findById(postId);
+    const post = await Post.findById(postId).populate(
+      "comments.user",
+      "username profileImg fullName"
+    );
 
     if (!post) {
       return res.status(404).json({ error: "Post not found" });
     }
 
+    // Create the new comment
     const comment = { user: userId, text };
 
+    // Add the new comment to the post
     post.comments.push(comment);
+
+    // Save the post
     await post.save();
 
-    res.status(200).json(comment);
+    // Populate the comment with user details for the response
+    const populatedComment = await post.populate({
+      path: "comments.user",
+      select: "username profileImg fullName",
+    });
+
+    // Return the newly added comment
+    const newComment =
+      populatedComment.comments[populatedComment.comments.length - 1];
+
+    res.status(200).json(newComment);
   } catch (error) {
-    console.log("Error in commentOnPost", error.message);
+    console.error("Error in commentOnPost:", error.message);
     return res.status(500).json({ error: "Internal Server Error" });
   }
 };
