@@ -25,7 +25,7 @@ const ProfilePage = () => {
 
   const user = {
     _id: "1",
-    fullName: "John Doe",
+    fullName: "Johnny Doe",
     username: "johndoe",
     profileImg: "/avatars/boy2.png",
     coverImg: "/cover.png",
